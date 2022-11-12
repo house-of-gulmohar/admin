@@ -1,0 +1,20 @@
+@import "../../../styles/colors.scss";
+
+.categories {
+  &__main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: $text-dark;
+    }
+
+    button {
+      background-color: $text-dark;
+      padding: 10px 20px;
+    }
+  }
+}
