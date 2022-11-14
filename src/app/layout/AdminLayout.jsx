@@ -1,6 +1,11 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BiHomeAlt, BiCategoryAlt } from "react-icons/bi";
+import {
+  BiHomeAlt,
+  BiCategoryAlt,
+  BiShoppingBag,
+  BiWorld,
+} from "react-icons/bi";
 import { BsArrowLeft } from "react-icons/bs";
 import "./AdminLayout.scss";
 
@@ -16,6 +21,16 @@ const AdminLayout = ({ children }) => {
           <li>
             <Link to={`/categorys`}>
               <BiCategoryAlt />
+            </Link>
+          </li>
+          <li>
+            <Link to={`/products`}>
+              <BiShoppingBag />
+            </Link>
+          </li>
+          <li>
+            <Link to={`/brands`}>
+              <BiWorld />
             </Link>
           </li>
         </ul>

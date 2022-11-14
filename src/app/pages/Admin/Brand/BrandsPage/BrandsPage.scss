@@ -1,0 +1,25 @@
+@import "../../../../styles/colors.scss";
+
+.brands {
+  &__main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: $text-dark;
+    }
+
+    &--actions {
+      display: flex;
+      gap: 20px;
+
+      a {
+        background-color: $text-dark;
+        padding: 10px 20px;
+      }
+    }
+  }
+}

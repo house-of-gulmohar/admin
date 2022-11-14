@@ -1,0 +1,20 @@
+@import "../../../../styles/colors.scss";
+
+.brand {
+  &__create {
+    text-align: center;
+    background-size: cover;
+    &-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 600px;
+      margin: 50px auto;
+      color: $text-dark;
+
+      button{
+        color: $text-light;
+      }
+    }
+  }
+}

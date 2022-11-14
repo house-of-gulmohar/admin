@@ -5,6 +5,7 @@ import { config } from "../app.config";
 import App from "./App";
 import AdminLayout from "./app/layout/AdminLayout";
 import "./index.css";
+import "./global.scss";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

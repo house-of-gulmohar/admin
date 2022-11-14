@@ -1,0 +1,20 @@
+@import "./app/styles/colors.scss";
+
+h1 {
+  font-size: 1.5rem;
+  color: $text-dark;
+  font-weight: 700;
+}
+
+.btn-dark {
+  background-color: $text-dark;
+  padding: 10px 20px;
+  color: $text-light;
+}
+
+input,
+textarea, option, select {
+  padding: 10px;
+  outline: none;
+  color: $text-dark;
+}
