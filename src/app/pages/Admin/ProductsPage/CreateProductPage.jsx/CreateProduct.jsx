@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getCategories } from "../../../../db/category";
 import "./CreateProduct.scss";
 
 const CreateProduct = () => {
@@ -7,6 +8,7 @@ const CreateProduct = () => {
   const [images, setImages] = useState([]);
   const [isUsingDiscount, setIsUsingDiscount] = useState(false);
   const [navigateBack, setNavigateBack] = useState(true);
+  const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -66,6 +68,13 @@ const CreateProduct = () => {
     console.log(newProduct);
     navigateBack && navigate("/products");
   };
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
+
   return (
     <div className="product__create">
       <div className="product__create-main">
@@ -79,6 +88,23 @@ const CreateProduct = () => {
           onChange={handleChange}
           value={product.name}
         />
+        <select
+          name="category"
+          placeholder="Category"
+          defaultValue={product.category}
+          onChange={handleChange}
+        >
+          <option value="0" disabled>
+            --select-category--
+          </option>
+          {categories.map((category) => {
+            return (
+              <option value={category.id} key={category.id}>
+                {category.name}
+              </option>
+            );
+          })}
+        </select>
         <textarea
           name="description"
           id="description"
@@ -190,10 +216,7 @@ const CreateProduct = () => {
           >
             {replacementPeriodTypeOptions.map((option) => {
               return (
-                <option
-                  value={option}
-                  selected={option === product.replacementPeriodType}
-                >
+                <option value={option} key={option}>
                   {option}
                 </option>
               );
@@ -217,10 +240,7 @@ const CreateProduct = () => {
           >
             {warrantyPeriodTypeOptions.map((option) => {
               return (
-                <option
-                  value={option}
-                  selected={option === product.warrantyPeriodType}
-                >
+                <option value={option} key={option}>
                   {option}
                 </option>
               );
@@ -255,6 +275,7 @@ const emptyProduct = {
   name: "",
   description: "",
   available: true,
+  category: 0,
   price: "",
   mrp: "",
   discount: "",

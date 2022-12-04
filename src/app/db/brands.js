@@ -11,10 +11,10 @@ export const getBrands = async () => {
   return brands;
 };
 
-
 export const createBrand = async (brand) => {
   let createdBrand;
   try {
+    console.log(brand);
     const createdBrandRef = await addDoc(collection(db, TABLES.brands), brand);
     createdBrand = createdBrandRef.id;
   } catch (err) {

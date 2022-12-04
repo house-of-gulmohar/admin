@@ -21,7 +21,7 @@ const BrandsPage = () => {
       </div>
       <div className="brands">
         {brands.map((brand) => (
-          <Brand brand={brand} />
+          <Brand brand={brand} key={brand.id} />
         ))}
       </div>
     </div>

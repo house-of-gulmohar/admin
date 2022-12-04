@@ -12,7 +12,6 @@ const CreateBrandPage = () => {
   const [brand, setBrand] = useState(emptyBrand);
   const [categories, setCategories] = useState([]);
   const [logo, setLogo] = useState("");
-  const [logoUrl, setLogoUrl] = useState("");
 
   const handleChange = (e) => {
     const key = e.target.name;
@@ -26,37 +25,22 @@ const CreateBrandPage = () => {
     });
   };
 
-  const upoloadLogo = async () => {
+  const handleBrandCreate = async () => {
     if (logo == null) return false;
-    let uploaded = false;
     const logoRef = ref(storage, `images/${logo.name + v4()}`);
-    await uploadBytes(logoRef, logo)
-      .then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((url) => {
-          setLogoUrl(url);
-          console.log(url);
-          uploaded = true;
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-        uploaded = false;
+    await uploadBytes(logoRef, logo).then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((url) => {
+        const isCreated =
+          validateBrand() &&
+          createBrand({
+            ...brand,
+            imageUrl: url,
+            joined: new Date(),
+          });
+        if (isCreated) {
+          setBrand(emptyBrand);
+        }
       });
-    return uploaded;
-  };
-
-  const handleBrandCreate = () => {
-    upoloadLogo().then(() => {
-      const isCreated =
-        validateBrand() &&
-        createBrand({
-          ...brand,
-          imageUrl: logoUrl,
-          joined: new Date(),
-        });
-      if (isCreated) {
-        setBrand(emptyBrand);
-      }
     });
   };
 
@@ -82,7 +66,12 @@ const CreateBrandPage = () => {
           onChange={handleChange}
           value={brand.name}
         />
-        <select name="category" placeholder="Category" onChange={handleChange}>
+        <select
+          name="category"
+          placeholder="Category"
+          value={brand.category}
+          onChange={handleChange}
+        >
           <option value="0" disabled>
             --select-category--
           </option>
@@ -95,6 +84,7 @@ const CreateBrandPage = () => {
           type="file"
           name="logo"
           id="logo"
+          accept="image/png"
           onChange={(e) => setLogo(e.target.files[0])}
         />
         <textarea
@@ -129,6 +119,7 @@ const emptyBrand = {
   name: "",
   description: "",
   partner: false,
+  category: 0,
 };
 
 export default CreateBrandPage;
