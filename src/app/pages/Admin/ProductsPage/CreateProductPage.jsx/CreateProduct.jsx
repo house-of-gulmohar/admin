@@ -1,14 +1,21 @@
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { v4 } from "uuid";
+import FileUpload from "../../../../components/FileUpload/FileUpload";
 import { getCategories } from "../../../../db/category";
+import { createProduct } from "../../../../db/products";
+import { storage } from "../../../../service/firebase/firebase";
 import "./CreateProduct.scss";
 
 const CreateProduct = () => {
   const [product, setProduct] = useState(emptyProduct);
-  const [images, setImages] = useState([]);
   const [isUsingDiscount, setIsUsingDiscount] = useState(false);
   const [navigateBack, setNavigateBack] = useState(true);
   const [categories, setCategories] = useState([]);
+  const [productImages, setProductImages] = useState([]);
+  const [initializeCreate, setInitializeCreate] = useState(false);
+  const [clearFiles, setClearFiles] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -47,26 +54,60 @@ const CreateProduct = () => {
     return price.toFixed(2);
   };
 
-  const handleCreateProduct = () => {
-    let newProduct;
-    if (isUsingDiscount) {
-      newProduct = {
-        ...product,
-        price: getPrice(),
-      };
-    } else {
-      newProduct = {
-        ...product,
-        discount: getDiscount(),
-      };
+  const onFileChange = (files) => {
+    setProductImages(files);
+  };
+
+  const uploadImages = async () => {
+    let images = [];
+    for (const image of productImages) {
+      const imageRef = ref(storage, `images/products/${image.name + v4()}`);
+      await uploadBytes(imageRef, image).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((url) => {
+          images.push(url);
+        });
+      });
     }
-    newProduct = {
-      ...newProduct,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    console.log(newProduct);
-    navigateBack && navigate("/products");
+    return images;
+  };
+
+  const handleCreateProduct = async () => {
+    setInitializeCreate(true);
+    await uploadImages().then((images) => {
+      let newProduct;
+      if (isUsingDiscount) {
+        newProduct = {
+          ...product,
+          price: getPrice(),
+        };
+      } else {
+        newProduct = {
+          ...product,
+          discount: getDiscount(),
+        };
+      }
+      newProduct = {
+        ...newProduct,
+        images: images,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      console.log(newProduct);
+      // setInitializeCreate(false);
+      createProduct(newProduct)
+        .then((data) => {
+          if (data) {
+            setInitializeCreate(false);
+            setProduct(emptyProduct);
+            setProductImages([]);
+            setClearFiles(true);
+            navigateBack && navigate("/products");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    });
   };
 
   useEffect(() => {
@@ -74,6 +115,16 @@ const CreateProduct = () => {
       setCategories(data);
     });
   }, []);
+
+  useEffect(() => {
+    let clearTimer;
+    if (clearFiles) {
+      clearTimer = setTimeout(() => {
+        setClearFiles(false);
+      }, 1000);
+    }
+    return () => clearTimeout(clearTimer);
+  }, [clearFiles]);
 
   return (
     <div className="product__create">
@@ -248,10 +299,19 @@ const CreateProduct = () => {
           </select>
         </div>
 
-        <button className="btn-dark" onClick={handleCreateProduct}>
-          Add Product
+        <div className="product__create-form--images">
+          <FileUpload
+            onFileChange={(files) => onFileChange(files)}
+            clear={clearFiles}
+          />
+        </div>
+        <button
+          className="btn-dark"
+          onClick={handleCreateProduct}
+          disabled={initializeCreate}
+        >
+          {initializeCreate ? "Adding..." : "Add Product"}
         </button>
-
         <span>
           <input
             type="checkbox"
